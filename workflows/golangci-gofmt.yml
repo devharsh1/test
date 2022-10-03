@@ -1,0 +1,62 @@
+name: golangci-gofmt
+on:
+  push:
+     # The branches below must be a subset of the branches above
+    branches: [master]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.yml'
+      - '**/*.yaml'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [master]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.yml'
+      - '**/*.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read | write
+  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # pull-requests: read
+jobs:
+  # golangci:
+  #   name: lint
+  #   runs-on: [runnerset=default-runners]
+  #   steps:
+  #     - uses: actions/setup-go@v3
+  #       with:
+  #         go-version: 1.14
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         # Default
+  #         token: ${{ github.token }}
+  #     - run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+  # - name: Format
+  #     run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
+  #     if: matrix.os == 'ubuntu-latest'
+  #   - name: Test
+  #     run: go test -race ./...
+
+  golangci:
+    name: gofmt  
+    runs-on: [runnerset=default-runners]
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.14
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+            # Default
+            token: ${{ github.token }}
+      - run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+      - name: Format
+        run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then "$(gofmt -s -w ./)"; fi
+        if: matrix.os == 'ubuntu-latest'
+      - name: Test
+        run: go test -race ./...
