@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   formatter:
-    runs-on: [runnerset=default-runners, env=production]
+    runs-on: [runnerset=default-runners]
     if: github.actor != 'tkpd-home-bot'
     steps:        
       - name: Configure private git
