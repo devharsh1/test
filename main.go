@@ -9,3 +9,19 @@ func helloworld() string {
 func main() {
 	fmt.Println(helloworld())
 }
+
+func getExampleTable(pid string) [][]interface{} {
+	switch pid {
+	case "12345":
+		return [][]interface{}{
+			[]interface{}{10},
+			{10},
+		}
+	case "10002":
+		return [][]interface{}{
+			[]interface{}{33},
+			{22},
+		}
+	}
+	return nil
+}
