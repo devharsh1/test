@@ -8,6 +8,7 @@ on:
   pull_request:
     branches: master
     paths: '**.go'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
