@@ -19,7 +19,7 @@ func getExampleTable(pid string) [][]interface{} {
 		}
 	case "10002":
 		return [][]interface{}{
-			[]interface{}{22},
+			[]interface{}{33},
 			{22},
 		}
 	}
