@@ -7,7 +7,6 @@ on:
   pull_request:
     branches: master
     paths: '**.go'
-  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
@@ -27,7 +26,7 @@ jobs:
       - name: Install Go14	
         uses: actions/setup-go@v2
         with:
-          go-version: 1.14.x
+          go-version: 1.17
 
       - name: Checkout PR branch
         uses: actions/checkout@v3
