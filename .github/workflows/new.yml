@@ -7,34 +7,23 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 jobs:
-
-  build:
-    runs-on: ubuntu-latest
+  golangci:
+    name: lint
+    runs-on: [runnerset=default-runners]
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.14
+      - uses: actions/checkout@v3
+        with:
+          # Default
+          token: ${{ github.token }}
+      - run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+      - name: Get dependencies
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go get -u github.com/golang/dep/cmd/dep
+          dep ensure -v
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.18
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
-
-    - name: Checkout PR branch
-      uses: actions/checkout@v3
-
-    - name: Setup Git
-    - run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
-
-    - name: Get dependencies
-      run: |
-        export PATH=$PATH:$(go env GOPATH)/bin
-        go get -u github.com/golang/dep/cmd/dep
-        dep ensure -v
-      
-    - name: Run unit-tests
-      run: ./test.sh test.out 15
+      - name: Run unit-tests
+        run: ./test.sh test.out 15
