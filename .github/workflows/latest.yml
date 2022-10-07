@@ -1,17 +1,15 @@
-name: origional one
+name: Go origional
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
 
@@ -23,8 +21,6 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
       
     - name: Format
         run:|
