@@ -20,7 +20,7 @@ file_name=$1
 file=$(cat "$file_name")
 if [ "$file" == "" ]
 then
-    echo "FAIL: Test Result is Empty!"
+    echo "FAIL: Test Result is Empty!!"
     exit 1
 fi
 
