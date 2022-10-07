@@ -11,8 +11,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    env:
-      GOPATH: /home/runner/work/_temp
+
     steps:
     - uses: actions/checkout@v3
 
@@ -27,5 +26,6 @@ jobs:
     - name: Test
       run: go test -v ./...
       
-    - name: Run unit-tests
-      run: ./test.sh test.out 15
+    - name: Format
+        run:|
+             if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then "$(gofmt -s -w ./)"; fi
