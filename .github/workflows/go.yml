@@ -27,5 +27,5 @@ jobs:
  
     - uses: actions/github-script@v6
       with:
-       run: |
+       script: |
              if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then "$(gofmt -s -w ./)"; fi
