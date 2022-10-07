@@ -9,10 +9,6 @@ on:
     paths: '**.go'
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
-  cancel-in-progress: true
-
 jobs:
   formatter:
     runs-on: [runnerset=default-runners]
