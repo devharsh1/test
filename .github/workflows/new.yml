@@ -27,21 +27,14 @@ jobs:
     - name: Checkout PR branch
       uses: actions/checkout@v3
 
+    - name: Setup Git
+    - run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
 
-    # go fmt only changes files.
-    - name: Execute Go Fmt
-      id: go-fmt
+    - name: Get dependencies
       run: |
-        git fetch origin master
-        files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
-        for x in $files
-        do
-            go fmt $x
-        done
-    - name: Commit and push
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-        commit_user_name: 'tkpd-home-bot'
-        commit_user_email: '111733097+tkpd-home-bot@users.noreply.github.com'
-        commit_message: "[BOT] Autofix | Go Formatter"
+        export PATH=$PATH:$(go env GOPATH)/bin
+        go get -u github.com/golang/dep/cmd/dep
+        dep ensure -v
+      
+    - name: Run unit-tests
+      run: ./test.sh test.out 15
