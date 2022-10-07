@@ -24,20 +24,62 @@ jobs:
         uses: actions/checkout@v3
        
           
-      # go fmt only changes files.
-      - name: Execute Go Fmt
-        id: go-fmt
+      - name: Create code coverage status for the current commit
         run: |
-          git fetch origin master
-          files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
-          for x in $files
-          do
-              go fmt $x
-          done
-      - name: Commit and push
-        uses: stefanzweifel/git-auto-commit-action@v4
+          curl "https://{GIT_USER}:${GIT_TOKEN}@api.github.com/repos/${ORG_NAME}/${PROJECT_NAME}/statuses/${COMMIT_SHA}" -d "{\"state\": \"pending\",\"target_url\": \"https://github.com/${ORG_NAME}/${PROJECT_NAME}/pull/${PULL_NUMBER}/checks?check_run_id=${RUN_ID}\",\"description\": \"in progress — This check has started... \",\"context\": \"code cov\"}"
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_USER: ${{ secrets.GIT_USER }}
+          ORG_NAME: ${{ secrets.ORG_NAME }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          RUN_ID: ${{ github.run_id }}
+          PULL_NUMBER: ${{ github.event.pull_request.number }}
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
         with:
-          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-          commit_user_name: 'tkpd-home-bot'
-          commit_user_email: '111733097+tkpd-home-bot@users.noreply.github.com'
-          commit_message: "[BOT] Autofix | Go Formatter"
+          go-version: ^1.15
+        id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Test
+        run: |
+          CVPKG=$(go list ./... | grep -v mocks | tr '\n' ',')
+          go test -coverpkg=${CVPKG} -coverprofile=coverage.out -covermode=count  ./...
+      - name: publish code cov
+        uses: actions/upload-artifact@v2
+        with:
+          name: code covarege report
+          path: coverage.out
+      - name: Setup gcloud cli
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          project_id: adikastyle-dev
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+          export_default_credentials: true
+      - name: Generate covarege Status
+        run: |
+          set -x
+          PROJECT_NAME=${PROJECT_NAME}
+          if gsutil -q stat gs://${SOME_BUCKET}/$PROJECT_NAME/coverage.out ; then
+            gsutil cp gs://${SOME_BUCKET}/$PROJECT_NAME/coverage.out coverage_prev.out
+            prev_total=`go tool cover -func=coverage_prev.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+          else
+            prev_total=0
+          fi
+          gsutil cp coverage.out gs://${SOME_BUCKET}/${PROJECT_NAME}/coverage.out
+          total=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+          echo "total cov: $total"
+          echo "prev build cov: $prev_total"
+          (( $(echo "$total > $prev_total" | bc -l) )) && STATE=success || STATE=failure
+          curl "https://${GIT_USER}:${ADIKA_GITHUB_TOKEN}@api.github.com/repos/${ORG_NAME}/${PROJECT_NAME}/statuses/${COMMIT_SHA}" -d "{\"state\": \"${STATE}\",\"target_url\": \"https://github.com/${ORG_NAME}/${PROJECT_NAME}/pull/${PULL_NUMBER}/checks?check_run_id=${RUN_ID}\",\"description\": \"${total}%\",\"context\": \"code cov\"}"
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_USER: ${{ secrets.GIT_USER }}
+          ORG_NAME: ${{ secrets.ORG_NAME }}
+          PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          PULL_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_ID: ${{ github.run_id }}
+
