@@ -5,11 +5,14 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      GOPATH: /home/runner/work/_temp
     steps:
     - uses: actions/checkout@v3
 
