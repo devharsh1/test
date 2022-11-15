@@ -8,6 +8,7 @@ on:
   pull_request:
     branches: master
     paths: '**.go'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
@@ -26,7 +27,7 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@v3
           
-      - name: Execute Go Import
-        id: go-import
-        run: make imports
+      - name: Check Golang imports order
+        uses: Jerome1337/goimports-action@v1.0.3
+
         
