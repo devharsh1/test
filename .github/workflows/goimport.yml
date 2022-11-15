@@ -1,0 +1,32 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+
+name: 'Check Golang imports order'
+
+on:
+  pull_request:
+    branches: master
+    paths: '**.go'
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
+  cancel-in-progress: true
+
+jobs:
+  formatter:
+    runs-on: [runnerset=default-runners, env=production]
+    steps:        
+          
+      - name: Install Go18	
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+          
+      - name: Execute Go Import
+        id: go-import
+        run: make imports
+        
