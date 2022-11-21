@@ -32,13 +32,8 @@ jobs:
         
     - name: Run reviser
       id: go-imports
-      run: |
-        git fetch origin master
-        files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
-        for x in $files
-        do
-            goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" $x
-        done
+      run: goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" ./...
+        
       
     - name: Commit and push
       uses: stefanzweifel/git-auto-commit-action@v4
