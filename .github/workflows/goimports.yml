@@ -32,7 +32,7 @@ jobs:
         
     - name: Run reviser
       id: go-imports
-      run: goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" ./...
+      run: goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" ./testdata/file.go
         
       
     - name: Commit and push
