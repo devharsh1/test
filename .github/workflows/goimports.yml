@@ -21,15 +21,14 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Check syntax
-      run: bash -n setup-homebrew/*.sh
-
     - name: Set up Homebrew
       id: set-up-homebrew
-      uses: ./setup-homebrew/
+      uses: Homebrew/actions/setup-homebrew@master
 
     - name: Install Homebrew goimports reviser
-      run: brew install incu6us/homebrew-tap/goimports-reviser
+      run: |
+       brew tap incu6us/homebrew-tap
+       brew install incu6us/homebrew-tap/goimports-reviser
         
     - name: Run reviser
       id: go-imports
