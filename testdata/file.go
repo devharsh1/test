@@ -12,5 +12,5 @@ import (
 
 func() {
 	log.err()
-t.const
+	t.const
 }
