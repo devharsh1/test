@@ -3,7 +3,7 @@ package testdata
 import (
 	"log"
 
-	"github.com/incu6us/goimports-reviser/testdata/innderpkg"
+	t "github.com/incu6us/goimports-reviser/testdata/innderpkg"
 
 	"bytes"
 
@@ -12,4 +12,5 @@ import (
 
 func() {
 	log.err()
+	t.const
 }
