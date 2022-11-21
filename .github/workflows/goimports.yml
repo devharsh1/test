@@ -36,7 +36,7 @@ jobs:
     - name: Run reviser
       id: go-imports
       run: |
-        git fetch origin master
+        git fetch origin main
         files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
         for x in $files
         do
