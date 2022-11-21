@@ -29,6 +29,9 @@ jobs:
       run: |
        brew tap incu6us/homebrew-tap
        brew install incu6us/homebrew-tap/goimports-reviser
+    
+    - name: Checkout PR branch
+      uses: actions/checkout@v3
         
     - name: Run reviser
       id: go-imports
