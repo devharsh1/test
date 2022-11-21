@@ -37,7 +37,7 @@ jobs:
       id: go-imports
       run: |
         git fetch origin main
-        files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
+        files=$(git diff --name-status origin/main | grep ".go$" | awk '{print $2}')
         for x in $files
         do
             goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" $x
