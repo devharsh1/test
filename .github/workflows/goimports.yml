@@ -1,0 +1,50 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Install reviser
+      run: |
+        brew update
+        brew install incu6us/homebrew-tap/goimports-reviser
+        
+    - name: Run reviser
+      id: go-imports reviser id
+      run: |
+        git fetch origin master
+        files=$(git diff --name-status origin/master | grep ".go$" | awk '{print $2}')
+        for x in $files
+        do
+            goimports-reviser -rm-unused -set-alias -imports-order "std,general,company,project" $x
+        done
+      
+    - name: Commit and push
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
+        commit_user_name: 'r3-bot'
+        commit_user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: "[BOT] Autofix | Go imports Formatter"
+
+
